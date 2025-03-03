@@ -1,7 +1,5 @@
 # Welcome to your Expo app 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-
 ## Get started
 
 1. Install dependencies
@@ -16,35 +14,74 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
     npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+# Patient Records Management App
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+A mobile application for managing patient records. This app allows healthcare professionals to view, add, and edit patient information.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Features
 
-## Get a fresh project
+- View a list of patient records
+- Expand/collapse patient cards to see more details
+- Add new patients
+- Edit existing patient information
+- Form validation
+- User-friendly notifications
 
-When you're ready, run:
+## Getting Started
 
-```bash
-npm run reset-project
-```
+### Prerequisites
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+- [Node.js](https://nodejs.org/) (version 14 or newer)
+- npm (comes with Node.js)
+- A smartphone (iOS or Android) OR an emulator/simulator
 
-## Learn more
+### Installation
 
-To learn more about developing your project with Expo, look at the following resources:
+1. Clone this repository or download the source code
+   ```bash
+   git clone https://andymayesf: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@github.com/andymayesf/challenge.git
+   cd challenge
+   ```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+2. Install dependencies
+   ```bash
+   npm install
+   ```
 
-## Join the community
+### Running the App
 
-Join our community of developers creating universal apps.
+#### Option 1: Using Expo Go (Easiest for first-time users)
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+1. Install the Expo Go app on your smartphone:
+   - [Expo Go for iOS](https://apps.apple.com/app/expo-go/id982107779)
+   - [Expo Go for Android](https://play.google.com/store/apps/details?id=host.exp.exponent)
+
+2. Start the development server
+   ```bash
+   npx expo start
+   ```
+
+3. Open the Expo Go app on your phone and scan the QR code displayed in your terminal or browser
+
+#### Option 2: Using an Emulator/Simulator
+
+1. Start the development server
+   ```bash
+   npx expo start
+   ```
+
+2. Press:
+   - `a` to open on an Android emulator (requires [Android Studio](https://docs.expo.dev/workflow/android-studio-emulator/))
+   - `i` to open on iOS simulator (requires [Xcode](https://docs.expo.dev/workflow/ios-simulator/), macOS only)
+
+
+## Technologies Used
+
+- React Native
+- Expo
+- TypeScript
+- Context API for state management
+- Expo Blur for modal backgrounds
+- Expo Haptics for tactile feedback
+
+## Project Structure
