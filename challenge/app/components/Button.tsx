@@ -4,7 +4,7 @@ import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, ViewStyle, TextS
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'outline' | 'danger';
   disabled?: boolean;
   loading?: boolean;
   style?: ViewStyle;
@@ -20,43 +20,34 @@ const Button: React.FC<ButtonProps> = ({
   style,
   textStyle,
 }) => {
-  const getButtonStyle = () => {
-    switch (variant) {
-      case 'secondary':
-        return styles.secondaryButton;
-      case 'outline':
-        return styles.outlineButton;
-      default:
-        return styles.primaryButton;
-    }
-  };
+  const buttonStyle = [
+    styles.button,
+    variant === 'primary' && styles.primaryButton,
+    variant === 'outline' && styles.outlineButton,
+    variant === 'danger' && styles.dangerButton,
+    disabled && styles.disabledButton,
+    style,
+  ];
 
-  const getTextStyle = () => {
-    switch (variant) {
-      case 'outline':
-        return styles.outlineText;
-      default:
-        return styles.buttonText;
-    }
-  };
+  const textStyleArray = [
+    styles.text,
+    variant === 'primary' && styles.text,
+    variant === 'outline' && styles.outlineText,
+    variant === 'danger' && styles.dangerText,
+    disabled && styles.disabledText,
+    textStyle,
+  ];
 
   return (
     <TouchableOpacity
-      style={[
-        styles.button,
-        getButtonStyle(),
-        disabled && styles.disabledButton,
-        style,
-      ]}
+      style={buttonStyle}
       onPress={onPress}
       disabled={disabled || loading}
     >
       {loading ? (
         <ActivityIndicator color={variant === 'outline' ? '#3498db' : '#fff'} />
       ) : (
-        <Text style={[getTextStyle(), disabled && styles.disabledText, textStyle]}>
-          {title}
-        </Text>
+        <Text style={textStyleArray}>{title}</Text>
       )}
     </TouchableOpacity>
   );
@@ -82,19 +73,23 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#3498db',
   },
+  dangerButton: {
+    backgroundColor: '#e74c3c',
+  },
   disabledButton: {
     backgroundColor: '#bdc3c7',
     borderColor: '#bdc3c7',
   },
-  buttonText: {
+  text: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
   outlineText: {
     color: '#3498db',
-    fontSize: 16,
-    fontWeight: '600',
+  },
+  dangerText: {
+    color: '#fff',
   },
   disabledText: {
     color: '#7f8c8d',

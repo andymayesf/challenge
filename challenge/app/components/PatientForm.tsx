@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, Alert } from 'react-native';
 import Input from './Input';
 import Button from './Button';
 import { Patient } from '../types/patient';
@@ -8,6 +8,7 @@ interface PatientFormProps {
   patient?: Patient;
   onSubmit: (patient: Omit<Patient, 'id'> | Patient) => void;
   onCancel: () => void;
+  onDelete?: (patient: Patient) => void;
 }
 
 interface FormErrors {
@@ -17,7 +18,7 @@ interface FormErrors {
   description?: string;
 }
 
-const PatientForm: React.FC<PatientFormProps> = ({ patient, onSubmit, onCancel }) => {
+const PatientForm: React.FC<PatientFormProps> = ({ patient, onSubmit, onCancel, onDelete }) => {
   const [form, setForm] = useState<Omit<Patient, 'id'> | Patient>({
     name: '',
     website: '',
@@ -39,8 +40,6 @@ const PatientForm: React.FC<PatientFormProps> = ({ patient, onSubmit, onCancel }
 
     if (!form.website.trim()) {
       newErrors.website = 'Website is required';
-    } else if (!/^https?:\/\//.test(form.website)) {
-      newErrors.website = 'Website must start with http:// or https://';
     }
 
     setErrors(newErrors);
@@ -68,13 +67,33 @@ const PatientForm: React.FC<PatientFormProps> = ({ patient, onSubmit, onCancel }
     }
   };
 
+  const handleDelete = () => {
+    if (patient && onDelete) {
+      Alert.alert(
+        "Delete Patient",
+        `Are you sure you want to delete ${patient.name}?`,
+        [
+          {
+            text: "Cancel",
+            style: "cancel"
+          },
+          {
+            text: "Delete",
+            style: "destructive",
+            onPress: () => onDelete(patient)
+          }
+        ]
+      );
+    }
+  };
+
   return (
     <ScrollView>
       <Input
         label="Name"
         value={form.name}
         onChangeText={(value) => handleChange('name', value)}
-        placeholder="John Doe"
+        placeholder="Enter patient name"
         error={errors.name}
       />
 
@@ -82,19 +101,15 @@ const PatientForm: React.FC<PatientFormProps> = ({ patient, onSubmit, onCancel }
         label="Website"
         value={form.website}
         onChangeText={(value) => handleChange('website', value)}
-        placeholder="https://example.com"
-        keyboardType="url"
-        autoCapitalize="none"
+        placeholder="Enter website URL"
         error={errors.website}
       />
 
       <Input
-        label="Avatar URL"
+        label="Avatar URL (optional)"
         value={form.avatar}
         onChangeText={(value) => handleChange('avatar', value)}
-        placeholder="https://example.com/avatar.jpg"
-        keyboardType="url"
-        autoCapitalize="none"
+        placeholder="Enter avatar URL"
         error={errors.avatar}
       />
 
@@ -102,7 +117,7 @@ const PatientForm: React.FC<PatientFormProps> = ({ patient, onSubmit, onCancel }
         label="Description"
         value={form.description}
         onChangeText={(value) => handleChange('description', value)}
-        placeholder="Patient description..."
+        placeholder="Enter patient description"
         multiline
         numberOfLines={4}
         textAlignVertical="top"
@@ -110,19 +125,32 @@ const PatientForm: React.FC<PatientFormProps> = ({ patient, onSubmit, onCancel }
         error={errors.description}
       />
 
-      <View style={styles.buttons}>
-        <Button
-          title="Cancel"
-          onPress={onCancel}
-          variant="outline"
-          style={styles.cancelButton}
-        />
-        <Button
-          title={patient ? 'Update' : 'Add Patient'}
-          onPress={handleSubmit}
-          loading={isSubmitting}
-        />
+      <View style={styles.actionButtons}>
+        <View style={styles.mainButtons}>
+          <Button
+            title="Cancel"
+            onPress={onCancel}
+            variant="outline"
+            style={styles.cancelButton}
+          />
+          <Button
+            title={patient ? 'Update' : 'Add Patient'}
+            onPress={handleSubmit}
+            loading={isSubmitting}
+          />
+        </View>
       </View>
+
+      {patient && onDelete && (
+        <View style={styles.deleteContainer}>
+          <Button
+            title="Delete Patient"
+            onPress={handleDelete}
+            variant="danger"
+            style={styles.deleteButton}
+          />
+        </View>
+      )}
     </ScrollView>
   );
 };
@@ -131,14 +159,23 @@ const styles = StyleSheet.create({
   textArea: {
     height: 100,
   },
-  buttons: {
+  actionButtons: {
+    marginTop: 16,
+  },
+  mainButtons: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-around',
     marginTop: 16,
   },
   cancelButton: {
     marginRight: 12,
   },
+  deleteContainer: {
+    paddingTop: 24,
+  },
+  deleteButton: {
+    width: '100%',
+  }
 });
 
 export default PatientForm;
