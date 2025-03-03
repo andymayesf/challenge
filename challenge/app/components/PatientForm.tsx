@@ -51,7 +51,7 @@ const PatientForm: React.FC<PatientFormProps> = ({ patient, onSubmit, onCancel }
     if (validateForm()) {
       setIsSubmitting(true);
 
-      // Simulate API call
+      // Simulate API call to show loading state
       setTimeout(() => {
         onSubmit(form);
         setIsSubmitting(false);

@@ -8,6 +8,7 @@ interface PatientContextType {
   error: string | null;
   addPatient: (patient: Omit<Patient, 'id'>) => void;
   updatePatient: (patient: Patient) => void;
+  deletePatient: (id: string) => void;
   setNotification: (message: string, type: 'success' | 'error') => void;
   notification: { message: string; type: 'success' | 'error' } | null;
 }
@@ -58,6 +59,14 @@ export const PatientProvider: React.FC<{ children: ReactNode }> = ({ children })
     setNotification(`Patient ${updatedPatient.name} updated successfully`, 'success');
   };
 
+  const deletePatient = (id: string) => {
+    const patientToDelete = patients.find(patient => patient.id === id);
+    if (patientToDelete) {
+      setPatients(patients.filter(patient => patient.id !== id));
+      setNotification(`Patient ${patientToDelete.name} deleted successfully`, 'success');
+    }
+  };
+
   const setNotification = (message: string, type: 'success' | 'error') => {
     setNotificationState({ message, type });
     setTimeout(() => {
@@ -73,6 +82,7 @@ export const PatientProvider: React.FC<{ children: ReactNode }> = ({ children })
         error,
         addPatient,
         updatePatient,
+        deletePatient,
         notification,
         setNotification,
       }}

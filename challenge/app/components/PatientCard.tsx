@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated, Image, Linking } from 'react-native';
 import Card from './Card';
 import Button from './Button';
@@ -9,9 +9,25 @@ interface PatientCardProps {
   onEdit: (patient: Patient) => void;
 }
 
+const DEFAULT_AVATAR = 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+
 const PatientCard: React.FC<PatientCardProps> = ({ patient, onEdit }) => {
   const [expanded, setExpanded] = useState(false);
   const [animation] = useState(new Animated.Value(0));
+  const [avatarError, setAvatarError] = useState(false);
+  const [contentHeight, setContentHeight] = useState(160);
+  const contentRef = useRef<View>(null);
+
+  // Measure the actual content height
+  useEffect(() => {
+    if (contentRef.current && expanded) {
+      contentRef.current.measure((x, y, width, height) => {
+        if (height > 0) {
+          setContentHeight(height);
+        }
+      });
+    }
+  }, [expanded, patient.description]);
 
   const toggleExpand = () => {
     const toValue = expanded ? 0 : 1;
@@ -28,7 +44,7 @@ const PatientCard: React.FC<PatientCardProps> = ({ patient, onEdit }) => {
 
   const height = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 150],
+    outputRange: [0, contentHeight],
   });
 
   // Format the date
@@ -50,10 +66,21 @@ const PatientCard: React.FC<PatientCardProps> = ({ patient, onEdit }) => {
     }
   };
 
+  const avatarSource = avatarError || !patient.avatar
+    ? { uri: DEFAULT_AVATAR }
+    : { uri: patient.avatar };
+
   return (
     <Card>
       <View style={styles.header}>
-        <Text style={styles.name}>{patient.name}</Text>
+        <View style={styles.headerLeft}>
+          <Image
+            source={avatarSource}
+            style={styles.headerAvatar}
+            onError={() => setAvatarError(true)}
+          />
+          <Text style={styles.name}>{patient.name}</Text>
+        </View>
         <TouchableOpacity onPress={toggleExpand} style={styles.expandButton}>
           <Text style={styles.expandButtonText}>
             {expanded ? '▲' : '▼'}
@@ -69,14 +96,9 @@ const PatientCard: React.FC<PatientCardProps> = ({ patient, onEdit }) => {
       </View>
 
       <Animated.View style={[styles.expandedContent, { height }]}>
-        {patient.avatar && (
-          <Image
-            source={{ uri: patient.avatar }}
-            style={styles.avatar}
-            resizeMode="cover"
-          />
-        )}
-        <Text style={styles.detailText}>📝 {patient.description}</Text>
+        <View ref={contentRef} style={styles.contentMeasure}>
+          <Text style={styles.detailText}>📝 {patient.description}</Text>
+        </View>
       </Animated.View>
 
       <View style={styles.footer}>
@@ -97,6 +119,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 8,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 12,
   },
   name: {
     fontSize: 18,
@@ -124,6 +156,11 @@ const styles = StyleSheet.create({
   },
   expandedContent: {
     overflow: 'hidden',
+  },
+  contentMeasure: {
+    position: 'absolute',
+    width: '100%',
+    paddingBottom: 8,
   },
   detailText: {
     fontSize: 14,
